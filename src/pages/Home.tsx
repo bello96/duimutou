@@ -96,7 +96,7 @@ export default function Home({
               onClick={() => setMode("multi")}
               className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition border-2 ${
                 mode === "multi"
-                  ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                  ? "border-amber-500 bg-amber-50 text-amber-700"
                   : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
               }`}
             >
@@ -142,7 +142,7 @@ export default function Home({
             <div>
               <div className="text-sm text-gray-500 mb-2">昵称</div>
               <input
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition"
                 placeholder="输入你的昵称"
                 maxLength={12}
                 value={nickname}
@@ -158,7 +158,7 @@ export default function Home({
                 }
               }}
               disabled={!nickname.trim() || createLoading}
-              className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition text-base disabled:opacity-50"
+              className="w-full py-3.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition text-base disabled:opacity-50"
             >
               {createLoading ? "创建中..." : "创建房间"}
             </button>
@@ -167,14 +167,14 @@ export default function Home({
             {!showJoin ? (
               <button
                 onClick={() => setShowJoin(true)}
-                className="w-full py-3.5 bg-white text-indigo-600 font-bold rounded-xl border-2 border-indigo-600 hover:bg-indigo-50 transition text-base"
+                className="w-full py-3.5 bg-white text-amber-700 font-bold rounded-xl border-2 border-amber-600 hover:bg-amber-50 transition text-base"
               >
                 加入房间
               </button>
             ) : (
               <div className="flex gap-2">
                 <input
-                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition"
                   placeholder="输入6位房间号"
                   maxLength={6}
                   value={joinCode}
@@ -189,7 +189,7 @@ export default function Home({
                 <button
                   onClick={handleJoin}
                   disabled={joinCode.length !== 6 || !nickname.trim() || joinLoading}
-                  className="px-5 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+                  className="px-5 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition disabled:opacity-50"
                 >
                   {joinLoading ? "..." : "加入"}
                 </button>
