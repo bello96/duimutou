@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { StackBlock, StackCanvasHandle } from "../components/StackCanvas";
+import type { SpeedLevel } from "../utils/stack";
 import {
   calculateDrop,
   getLevel,
@@ -23,6 +24,7 @@ interface UseStackGameOptions {
   onDrop?: (stats: GameStats) => void;
   onGameOver?: (stats: GameStats) => void;
   paused?: boolean;
+  speed?: SpeedLevel;
 }
 
 export function useStackGame({
@@ -31,6 +33,7 @@ export function useStackGame({
   onDrop,
   onGameOver,
   paused = false,
+  speed = "normal",
 }: UseStackGameOptions) {
   const [blocks, setBlocks] = useState<StackBlock[]>([]);
   const [movingBlock, setMovingBlock] = useState<{
@@ -54,6 +57,8 @@ export function useStackGame({
   const layerRef = useRef(0);
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
+  const speedRef = useRef(speed);
+  speedRef.current = speed;
 
   const start = useCallback(() => {
     const initialWidth = Math.floor(canvasWidth * INITIAL_WIDTH_RATIO);
@@ -101,7 +106,7 @@ export function useStackGame({
         if (!prev) {
           return prev;
         }
-        const speed = getSpeed(prev.layer) * dt;
+        const speed = getSpeed(prev.layer, speedRef.current) * dt;
         let newLeft = prev.left + speed * dirRef.current;
         if (newLeft + prev.width > canvasWidth) {
           newLeft = canvasWidth - prev.width;

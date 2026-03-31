@@ -1,6 +1,7 @@
 interface Env {}
 
 type GamePhase = "waiting" | "readying" | "playing" | "ended";
+type SpeedLevel = "slow" | "normal" | "fast";
 
 interface PlayerEntry {
   id: string;
@@ -35,6 +36,7 @@ export class StackRoom implements DurableObject {
   private ownerId: string | null = null;
   private players = new Map<string, PlayerEntry>();
   private chat: ChatMsg[] = [];
+  private speed: SpeedLevel = "normal";
   private gameStartsAt = 0;
   private winnerId: string | null = null;
   private closed = false;
@@ -158,6 +160,9 @@ export class StackRoom implements DurableObject {
       case "startGame":
         this.handleStartGame(ws);
         break;
+      case "setSpeed":
+        this.handleSetSpeed(ws, msg as { type: "setSpeed"; speed: SpeedLevel });
+        break;
       case "drop":
         this.handleDrop(ws, msg as {
           type: "drop"; layer: number; score: number; combo: number;
@@ -246,6 +251,18 @@ export class StackRoom implements DurableObject {
     this.broadcast({ type: "readyChanged", playerId: player.id, ready: player.ready });
   }
 
+  private handleSetSpeed(ws: WebSocket, msg: { speed: SpeedLevel }) {
+    const player = this.findPlayerByWs(ws);
+    if (!player || player.id !== this.ownerId || this.phase !== "readying") {
+      return;
+    }
+    if (msg.speed !== "slow" && msg.speed !== "normal" && msg.speed !== "fast") {
+      return;
+    }
+    this.speed = msg.speed;
+    this.broadcast({ type: "speedChanged", speed: this.speed });
+  }
+
   private handleStartGame(ws: WebSocket) {
     const player = this.findPlayerByWs(ws);
     if (!player || player.id !== this.ownerId || this.phase !== "readying") {
@@ -274,6 +291,7 @@ export class StackRoom implements DurableObject {
     this.broadcast({
       type: "gameStart",
       gameStartsAt: this.gameStartsAt,
+      speed: this.speed,
     });
     this.broadcast({ type: "phaseChange", phase: "playing" });
   }
@@ -515,6 +533,7 @@ export class StackRoom implements DurableObject {
       chat: this.chat.slice(-50),
       stacks: Object.keys(stacks).length > 0 ? stacks : undefined,
       gameStartsAt: this.phase === "playing" ? this.gameStartsAt : undefined,
+      speed: this.speed,
     };
   }
 

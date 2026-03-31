@@ -1,5 +1,7 @@
 export type GamePhase = "waiting" | "readying" | "playing" | "ended";
 
+export type SpeedLevel = "slow" | "normal" | "fast";
+
 export interface PlayerInfo {
   id: string;
   name: string;
@@ -34,6 +36,7 @@ export interface S_RoomState {
   chat: ChatMessage[];
   stacks?: Record<string, PlayerStackState>;
   gameStartsAt?: number;
+  speed?: SpeedLevel;
 }
 
 export interface S_PlayerJoined {
@@ -60,6 +63,12 @@ export interface S_ReadyChanged {
 export interface S_GameStart {
   type: "gameStart";
   gameStartsAt: number;
+  speed: SpeedLevel;
+}
+
+export interface S_SpeedChanged {
+  type: "speedChanged";
+  speed: SpeedLevel;
 }
 
 export interface S_PlayerDropped {
@@ -113,6 +122,7 @@ export type ServerMessage =
   | S_PhaseChange
   | S_ReadyChanged
   | S_GameStart
+  | S_SpeedChanged
   | S_PlayerDropped
   | S_PlayerGameOver
   | S_GameEnd
@@ -132,6 +142,11 @@ export interface C_Ready {
 
 export interface C_StartGame {
   type: "startGame";
+}
+
+export interface C_SetSpeed {
+  type: "setSpeed";
+  speed: SpeedLevel;
 }
 
 export interface C_Drop {
@@ -180,6 +195,7 @@ export type ClientMessage =
   | C_Join
   | C_Ready
   | C_StartGame
+  | C_SetSpeed
   | C_Drop
   | C_GameOver
   | C_Surrender

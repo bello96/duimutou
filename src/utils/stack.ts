@@ -4,8 +4,22 @@ export const INITIAL_WIDTH_RATIO = 0.7;
 export const PERFECT_THRESHOLD = 3;
 export const MAX_LAYERS = 50;
 
-export function getSpeed(layer: number): number {
-  return 2 + Math.log(layer + 1) * 1.5;
+export type SpeedLevel = "slow" | "normal" | "fast";
+
+const SPEED_MULTIPLIERS: Record<SpeedLevel, number> = {
+  slow: 0.6,
+  normal: 1.0,
+  fast: 1.6,
+};
+
+export const SPEED_LABELS: Record<SpeedLevel, string> = {
+  slow: "低速",
+  normal: "中速",
+  fast: "高速",
+};
+
+export function getSpeed(layer: number, speed: SpeedLevel = "normal"): number {
+  return (2 + Math.log(layer + 1) * 1.5) * SPEED_MULTIPLIERS[speed];
 }
 
 export function getLevel(layer: number): number {

@@ -4,7 +4,8 @@ import type { StackCanvasHandle } from "../components/StackCanvas";
 import GameResultModal from "../components/GameResultModal";
 import { useStackGame } from "../hooks/useStackGame";
 import { useSound } from "../hooks/useSound";
-import { getLevel } from "../utils/stack";
+import type { SpeedLevel } from "../utils/stack";
+import { getLevel, SPEED_LABELS } from "../utils/stack";
 
 interface Props {
   onLeave: () => void;
@@ -17,6 +18,7 @@ export default function SinglePlayer({ onLeave }: Props) {
   const canvasRef = useRef<StackCanvasHandle>(null);
   const { play, ensure } = useSound();
   const [showResult, setShowResult] = useState(false);
+  const [speed, setSpeed] = useState<SpeedLevel>("normal");
   const [bestScore, setBestScore] = useState(() => {
     const stored = localStorage.getItem("stack_best");
     return stored ? parseInt(stored, 10) : 0;
@@ -53,6 +55,7 @@ export default function SinglePlayer({ onLeave }: Props) {
     canvasRef,
     onDrop: handleDrop,
     onGameOver: handleGameOver,
+    speed,
   });
 
   useEffect(() => {
@@ -127,10 +130,28 @@ export default function SinglePlayer({ onLeave }: Props) {
             <div className="text-center">
               <div className="text-2xl font-black text-amber-800 mb-2">堆木头</div>
               <div className="text-sm text-gray-600 mb-4">点击屏幕或按空格键开始</div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-500 mb-4">
                 在木头移动到正上方时点击放下
                 <br />
                 尽可能对齐，越准分越高
+              </div>
+              <div className="flex gap-2 justify-center">
+                {(["slow", "normal", "fast"] as const).map((s) => (
+                  <button
+                    key={s}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSpeed(s);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                      speed === s
+                        ? "bg-amber-600 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {SPEED_LABELS[s]}
+                  </button>
+                ))}
               </div>
             </div>
           </div>

@@ -15,7 +15,9 @@ import type {
   GamePhase,
   PlayerInfo,
   ServerMessage,
+  SpeedLevel,
 } from "../types/protocol";
+import { SPEED_LABELS } from "../utils/stack";
 
 interface Props {
   roomCode: string;
@@ -39,6 +41,7 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const [winReason, setWinReason] = useState("");
   const [scores, setScores] = useState<Record<string, { score: number; layer: number }>>({});
+  const [speed, setSpeed] = useState<SpeedLevel>("normal");
 
   const [opponentBlocks, setOpponentBlocks] = useState<StackBlock[]>([]);
   const [opponentScore, setOpponentScore] = useState(0);
@@ -102,6 +105,7 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
     onDrop: handleDrop,
     onGameOver: handleGameOver,
     paused: phase === "playing" && !countdownDone,
+    speed,
   });
 
   useEffect(() => {
@@ -115,6 +119,13 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
           if (msg.gameStartsAt) {
             setGameStartsAt(msg.gameStartsAt);
           }
+          if (msg.speed) {
+            setSpeed(msg.speed);
+          }
+          break;
+
+        case "speedChanged":
+          setSpeed(msg.speed);
           break;
 
         case "playerJoined":
@@ -151,6 +162,7 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
 
         case "gameStart": {
           setGameStartsAt(msg.gameStartsAt);
+          setSpeed(msg.speed);
           setCountdownDone(false);
           setShowResult(false);
           setShowConfetti(false);
@@ -278,6 +290,32 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
               )}
               {phase === "readying" && (
                 <div className="space-y-4">
+                  {/* 速度选择（房主可改，非房主只读） */}
+                  <div className="text-sm text-gray-600 mb-1">摆动速度</div>
+                  <div className="flex gap-2 justify-center">
+                    {(["slow", "normal", "fast"] as const).map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => {
+                          if (isOwner) {
+                            setSpeed(s);
+                            send({ type: "setSpeed", speed: s });
+                          }
+                        }}
+                        disabled={!isOwner}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                          speed === s
+                            ? "bg-amber-600 text-white"
+                            : isOwner
+                              ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              : "bg-gray-100 text-gray-400 cursor-default"
+                        }`}
+                      >
+                        {SPEED_LABELS[s]}
+                      </button>
+                    ))}
+                  </div>
+
                   {isOwner ? (
                     <button
                       onClick={() => send({ type: "startGame" })}
