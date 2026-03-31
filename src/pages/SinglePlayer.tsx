@@ -86,8 +86,8 @@ export default function SinglePlayer({ onLeave }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a0e08] flex flex-col items-center">
-      <div className="w-full max-w-[320px] flex items-center justify-between p-3 text-white text-sm">
+    <div className="min-h-screen bg-[#f5f0eb] flex flex-col items-center">
+      <div className="w-full max-w-[320px] flex items-center justify-between p-3 text-gray-800 text-sm">
         <button
           onClick={onLeave}
           className="px-3 py-1 bg-gray-700 rounded-lg hover:bg-gray-600 transition text-xs"
@@ -96,19 +96,19 @@ export default function SinglePlayer({ onLeave }: Props) {
         </button>
         <div className="flex gap-4">
           <span>
-            得分: <span className="text-amber-300 font-bold">{game.score}</span>
+            得分: <span className="text-amber-700 font-bold">{game.score}</span>
           </span>
           <span>
-            等级: <span className="text-amber-300">{game.level}</span>
+            等级: <span className="text-amber-700">{game.level}</span>
           </span>
           <span>
-            连击: <span className="text-amber-300">{game.combo}</span>
+            连击: <span className="text-amber-700">{game.combo}</span>
           </span>
         </div>
       </div>
 
       {bestScore > 0 && (
-        <div className="text-xs text-gray-500 mb-1">
+        <div className="text-xs text-gray-600 mb-1">
           最高分: <span className="text-amber-600">{bestScore}</span>
         </div>
       )}
@@ -123,10 +123,10 @@ export default function SinglePlayer({ onLeave }: Props) {
           onClick={handleCanvasClick}
         />
         {!game.started && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+          <div className="absolute inset-0 flex items-center justify-center bg-white/80">
             <div className="text-center">
-              <div className="text-2xl font-black text-amber-400 mb-2">堆木头</div>
-              <div className="text-sm text-gray-300 mb-4">点击屏幕或按空格键开始</div>
+              <div className="text-2xl font-black text-amber-800 mb-2">堆木头</div>
+              <div className="text-sm text-gray-600 mb-4">点击屏幕或按空格键开始</div>
               <div className="text-xs text-gray-500">
                 在木头移动到正上方时点击放下
                 <br />

@@ -3,7 +3,7 @@ import { getHttpBase, getWsBase } from "../api";
 import StackCanvas from "../components/StackCanvas";
 import type { StackBlock, StackCanvasHandle } from "../components/StackCanvas";
 import PlayerBar from "../components/PlayerBar";
-import ChatPanel from "../components/ChatPanel";
+
 import CountdownOverlay from "../components/CountdownOverlay";
 import GameResultModal from "../components/GameResultModal";
 import Confetti from "../components/Confetti";
@@ -12,7 +12,6 @@ import { useStackGame } from "../hooks/useStackGame";
 import type { GameStats } from "../hooks/useStackGame";
 import { useSound } from "../hooks/useSound";
 import type {
-  ChatMessage,
   GamePhase,
   PlayerInfo,
   ServerMessage,
@@ -33,7 +32,6 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [ownerId, setOwnerId] = useState<string | null>(null);
   const [phase, setPhase] = useState<GamePhase>("waiting");
-  const [chat, setChat] = useState<ChatMessage[]>([]);
   const [gameStartsAt, setGameStartsAt] = useState(0);
   const [countdownDone, setCountdownDone] = useState(false);
   const [showResult, setShowResult] = useState(false);
@@ -43,6 +41,9 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
   const [scores, setScores] = useState<Record<string, { score: number; layer: number }>>({});
 
   const [opponentBlocks, setOpponentBlocks] = useState<StackBlock[]>([]);
+  const [opponentScore, setOpponentScore] = useState(0);
+  const [opponentCombo, setOpponentCombo] = useState(0);
+  const [opponentLayer, setOpponentLayer] = useState(0);
   const opponentCanvasRef = useRef<StackCanvasHandle>(null);
 
   const myCanvasRef = useRef<StackCanvasHandle>(null);
@@ -111,7 +112,6 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
           setPlayers(msg.players);
           setOwnerId(msg.ownerId);
           setPhase(msg.phase);
-          setChat(msg.chat);
           if (msg.gameStartsAt) {
             setGameStartsAt(msg.gameStartsAt);
           }
@@ -149,14 +149,21 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
           );
           break;
 
-        case "gameStart":
+        case "gameStart": {
           setGameStartsAt(msg.gameStartsAt);
           setCountdownDone(false);
           setShowResult(false);
           setShowConfetti(false);
-          setOpponentBlocks([]);
+          // 初始化对手的底座木块（与自己相同的初始宽度和位置）
+          const initialWidth = Math.floor(CANVAS_W * 0.7);
+          const initialLeft = Math.floor((CANVAS_W - initialWidth) / 2);
+          setOpponentBlocks([{ left: initialLeft, width: initialWidth, layer: 0 }]);
+          setOpponentScore(0);
+          setOpponentCombo(0);
+          setOpponentLayer(0);
           ensure();
           break;
+        }
 
         case "playerDropped":
           if (msg.playerId !== myId) {
@@ -164,6 +171,9 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
               ...prev,
               { left: msg.blockLeft, width: msg.blockWidth, layer: msg.layer },
             ]);
+            setOpponentScore(msg.score);
+            setOpponentCombo(msg.combo);
+            setOpponentLayer(msg.layer);
             if (msg.perfect) {
               opponentCanvasRef.current?.addFlash(msg.layer);
             }
@@ -187,13 +197,6 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
             play("lose");
           }
           setTimeout(() => setShowResult(true), 600);
-          break;
-
-        case "chat":
-          setChat((prev) => [
-            ...prev,
-            { id: msg.id, playerId: msg.playerId, playerName: msg.playerName, text: msg.text, ts: msg.ts },
-          ]);
           break;
 
         case "roomClosed":
@@ -247,7 +250,7 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
   const opponentScoreData = opponentId ? scores[opponentId] : undefined;
 
   return (
-    <div className="min-h-screen bg-[#1a0e08] flex flex-col">
+    <div className="min-h-screen bg-[#f5f0eb] flex flex-col">
       <PlayerBar
         roomCode={roomCode}
         players={players}
@@ -265,11 +268,11 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
             <div className="text-center">
               {phase === "waiting" && (
                 <>
-                  <div className="text-2xl text-amber-400 font-bold mb-4 animate-pulse">
+                  <div className="text-2xl text-amber-700 font-bold mb-4 animate-pulse">
                     等待对手加入...
                   </div>
                   <div className="text-gray-500 text-sm">
-                    分享房间号 <span className="text-amber-300 font-mono">{roomCode}</span> 给好友
+                    分享房间号 <span className="text-amber-700 font-mono">{roomCode}</span> 给好友
                   </div>
                 </>
               )}
@@ -306,17 +309,19 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
 
         {(phase === "playing" || phase === "ended") && (
           <>
-            <div className="w-full max-w-[600px] flex justify-between px-4 py-2 text-sm text-white">
+            <div className="w-full max-w-[600px] flex justify-between px-4 py-2 text-sm text-gray-800">
               <div className="flex gap-3">
-                <span className="text-amber-300 font-bold">我</span>
+                <span className="text-amber-700 font-bold">我</span>
                 <span>得分: {game.score}</span>
                 <span>连击: {game.combo}</span>
                 <span>等级: {game.level}</span>
               </div>
-              {opponent && opponentBlocks.length > 0 && (
+              {opponent && (
                 <div className="flex gap-3">
-                  <span className="text-[#f72585] font-bold">{opponent.name}</span>
-                  <span>第 {opponentBlocks[opponentBlocks.length - 1]?.layer ?? 0} 层</span>
+                  <span className="text-red-600 font-bold">{opponent.name}</span>
+                  <span>得分: {opponentScore}</span>
+                  <span>连击: {opponentCombo}</span>
+                  <span>等级: {Math.floor(opponentLayer / 10) + 1}</span>
                 </div>
               )}
             </div>
@@ -335,7 +340,7 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
                     }
                   }}
                 />
-                <div className="text-center text-xs text-amber-300 mt-1">我</div>
+                <div className="text-center text-xs text-amber-700 mt-1">我</div>
               </div>
 
               <div className="relative">
@@ -347,7 +352,7 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
                   width={CANVAS_W}
                   height={CANVAS_H}
                 />
-                <div className="text-center text-xs text-[#f72585] mt-1">
+                <div className="text-center text-xs text-red-600 mt-1">
                   {opponent?.name || "对手"}
                 </div>
               </div>
@@ -360,21 +365,13 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
                     send({ type: "surrender" });
                   }
                 }}
-                className="mt-3 px-4 py-1.5 text-xs bg-red-900/50 text-red-300 rounded-lg hover:bg-red-800/50 transition"
+                className="mt-3 px-4 py-1.5 text-xs bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
               >
                 投降
               </button>
             )}
           </>
         )}
-      </div>
-
-      <div className="h-48">
-        <ChatPanel
-          messages={chat}
-          myId={myId}
-          onSend={(text) => send({ type: "chat", text })}
-        />
       </div>
 
       {phase === "playing" && gameStartsAt > 0 && !countdownDone && (

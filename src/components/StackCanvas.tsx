@@ -100,14 +100,14 @@ const StackCanvas = forwardRef<StackCanvasHandle, Props>(function StackCanvas(
       ctx.clearRect(0, 0, width, height);
 
       const grad = ctx.createLinearGradient(0, 0, 0, height);
-      grad.addColorStop(0, "#1a0e08");
-      grad.addColorStop(1, "#2c1810");
+      grad.addColorStop(0, "#f5f0eb");
+      grad.addColorStop(1, "#ede5db");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = "#4a3728";
+      ctx.fillStyle = "#d4c4b0";
       ctx.fillRect(0, baseY + BLOCK_HEIGHT, width, height - baseY - BLOCK_HEIGHT);
-      ctx.fillStyle = "#5c4a3a";
+      ctx.fillStyle = "#c9b99f";
       ctx.fillRect(0, baseY + BLOCK_HEIGHT, width, 3);
 
       const topLayer = blocks.length + (movingBlock ? 1 : 0);
@@ -173,7 +173,7 @@ const StackCanvas = forwardRef<StackCanvasHandle, Props>(function StackCanvas(
         ctx.fillStyle = `rgba(255,255,200,${alpha * 0.4})`;
         ctx.fillRect(0, y - 5, width, BLOCK_HEIGHT + 10);
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = "#ffd700";
+        ctx.fillStyle = "#f59e0b";
         ctx.font = "bold 16px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("完美!", width / 2, y - 10 - elapsed * 30);

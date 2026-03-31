@@ -43,9 +43,9 @@ export default function CountdownOverlay({ startsAt, onDone, playTick, playGo }:
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30">
       <div
-        className="text-8xl font-black text-amber-400 drop-shadow-lg"
+        className="text-8xl font-black text-amber-600 drop-shadow-lg"
         style={{
           animation: "countdown-pop 0.4s ease-out",
         }}

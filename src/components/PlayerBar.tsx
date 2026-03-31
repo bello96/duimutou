@@ -43,12 +43,12 @@ export default function PlayerBar({
   }
 
   return (
-    <div className="flex items-center p-3 bg-[#3d2317] text-white gap-3 text-sm">
+    <div className="flex items-center p-3 bg-white shadow-sm border-b border-gray-200 text-gray-800 gap-3 text-sm">
       <div className="flex items-center gap-2 flex-1">
-        <span className="font-mono text-amber-300">#{roomCode}</span>
+        <span className="font-mono text-amber-700 font-bold">#{roomCode}</span>
         <button
           onClick={copyLink}
-          className="px-2 py-0.5 text-xs bg-amber-700/50 rounded hover:bg-amber-700 transition"
+          className="px-2 py-0.5 text-xs bg-amber-100 text-amber-700 rounded hover:bg-amber-200 transition"
           title="复制邀请链接"
         >
           分享
@@ -64,7 +64,7 @@ export default function PlayerBar({
             <span
               className={`w-2 h-2 rounded-full ${p.online ? "bg-green-500" : "bg-gray-400"}`}
             />
-            <span className={p.id === myId ? "text-amber-300 font-bold" : ""}>
+            <span className={p.id === myId ? "text-amber-700 font-bold" : ""}>
               {p.name}
               {p.id === ownerId && (
                 <span className="ml-1 text-xs text-amber-500">房主</span>
@@ -86,7 +86,7 @@ export default function PlayerBar({
         {phase === "ended" && isOwner && onPlayAgain && (
           <button
             onClick={onPlayAgain}
-            className="px-3 py-1 text-xs bg-amber-600 rounded-lg hover:bg-amber-700 transition"
+            className="px-3 py-1 text-xs bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition"
           >
             再来一局
           </button>
@@ -101,7 +101,7 @@ export default function PlayerBar({
         )}
         <button
           onClick={onLeave}
-          className="px-3 py-1 text-xs bg-red-800/60 rounded-lg hover:bg-red-700 transition"
+          className="px-3 py-1 text-xs bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
         >
           离开
         </button>

@@ -55,7 +55,7 @@ export default function Home({
   }
 
   return (
-    <div className="min-h-screen bg-[#1a0e08] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#f5f0eb] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-black text-amber-800 mb-1">堆木头</h1>
