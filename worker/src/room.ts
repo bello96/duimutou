@@ -36,7 +36,7 @@ export class StackRoom implements DurableObject {
   private ownerId: string | null = null;
   private players = new Map<string, PlayerEntry>();
   private chat: ChatMsg[] = [];
-  private speed: SpeedLevel = "normal";
+  private speed: SpeedLevel = "slow";
   private gameStartsAt = 0;
   private winnerId: string | null = null;
   private closed = false;

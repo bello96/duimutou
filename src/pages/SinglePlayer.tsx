@@ -18,7 +18,7 @@ export default function SinglePlayer({ onLeave }: Props) {
   const canvasRef = useRef<StackCanvasHandle>(null);
   const { play, ensure } = useSound();
   const [showResult, setShowResult] = useState(false);
-  const [speed, setSpeed] = useState<SpeedLevel>("normal");
+  const [speed, setSpeed] = useState<SpeedLevel>("slow");
   const [bestScore, setBestScore] = useState(() => {
     const stored = localStorage.getItem("stack_best");
     return stored ? parseInt(stored, 10) : 0;

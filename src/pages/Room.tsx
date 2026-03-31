@@ -41,7 +41,7 @@ export default function Room({ roomCode, nickname, playerId, onLeave }: Props) {
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const [winReason, setWinReason] = useState("");
   const [scores, setScores] = useState<Record<string, { score: number; layer: number }>>({});
-  const [speed, setSpeed] = useState<SpeedLevel>("normal");
+  const [speed, setSpeed] = useState<SpeedLevel>("slow");
 
   const [opponentBlocks, setOpponentBlocks] = useState<StackBlock[]>([]);
   const [opponentScore, setOpponentScore] = useState(0);

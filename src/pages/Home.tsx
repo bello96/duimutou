@@ -21,7 +21,7 @@ export default function Home({
   createLoading,
 }: Props) {
   const [mode, setMode] = useState<Mode>("single");
-  const [_speed, setSpeed] = useState<SpeedLevel>("normal");
+  const [_speed, setSpeed] = useState<SpeedLevel>("slow");
   const [nickname, setNickname] = useState(() => {
     try {
       const s = sessionStorage.getItem("stack_session");
